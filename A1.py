@@ -1,6 +1,7 @@
 # Author: Miguel Nava
 # Assignment: Individual assignment: game leaderboard tracker
 import fileinput
+import inspect
 
 Player = {}
 Game = {}
@@ -8,24 +9,18 @@ Game = {}
 
 #FIXME make sure to convert playerID from string to integer at some point 
 def AddPlayer (playerID, playerName): 
-    if isinstance(playerID, int): 			# checks if ID is an int
+    if str.isdigit(playerID): 		# checks if ID is an int
         if playerID >= 0:					# checks if ID is positive 
-            print playerID					# need to add to database 
-    else:
-        print "not integer"
-		
-    if '\"' not in playerName:   			# checks for double quotes 
-        print playerName					# need to add name to database 
-    else:
-        print "string contains \""
-    return
-
+			if '\"' not in playerName:   			# checks for double quotes		
+				Player[int(playerID)] = playerName
+	return
+	
 #AddGame <Game ID> <Game Name>
 	#Adds game to data base with a positive integer indentifier 
 	#Name is given as string, can contain special characters except double quotes 
 def AddGame (gameID, gameName):
-		print gameID
-		print gameName
+	Game[gameID] = gameName
+
 #AddVictory <Game ID> <Victory ID> <Victory Name> <Victory Points>
 	#Add victory to the game denoted by the Game ID
 	#Victory ID is just to identify the victory 
@@ -33,9 +28,9 @@ def AddGame (gameID, gameName):
 	#The points indicate what the victory is worth
 def AddVictory(gameID,victoryID, victoryName,victoryPoints):
 	print gameID
-	print victoryID
-	print victoryName
-	print victoryPoints
+	# print victoryID
+	# print victoryName
+	# print victoryPoints
 	
 #Plays <Player ID> <Game ID> <Player IGN>
 	# 
@@ -82,16 +77,48 @@ def SummarizeVictory(gameID, victoryID):
 	#
 def VictoryRanking():
 	print "victory Ranking"
+	
+def callMethod(m, a):
+	if len(a) == 0:
+		m();
+	elif len(a) == 1:
+		m(a[0])
+	elif len(a) == 2:
+		m(a[0], a[1])
+	elif len(a) == 3:
+		m(a[0], a[1], a[2])
+	elif len(a) == 4:
+		m(a[0], a[1], a[2], a[3])
+	
 def parse(elements):
 	element = elements.partition(" ")
+	args = {}
 	if(element[0] is ""):
 		pass
 	else:
-		globals()[element[0]]
+		method = globals()[element[0]]					# gets function
+		argNum = method.func_code.co_argcount			# gets number of args in the function
+		for i in range(0,argNum-1):			
+			if ( "\"" not in element[2][0]):
+				element = element[2].partition(" ")
+				args[i] = element[0]
+				print element[0]
+			else:
+				element = element[2].split("\"")
+				args[i] = element[1]
+				element = element[2].partition(" ")
+				print element[1]
+		if ( "\"" not in element[2][0]):
+			args[argNum-1] = element[2]
+		else:
+			args[argNum-1] = element[2].split("\"")[1]
+		callMethod(method, args)
 	
 for line in fileinput.input():				# stdin, reads file line by line 
     parse(line)
 
+print Player 
+print Game
 # Trial and error stuff	
 # arr = {}
 # for i in range(0,10):
