@@ -212,4 +212,4 @@ def parse(elements):
 
 	
 for line in fileinput.input():																		# stdin, reads file line by line 
-    parse(line)																						# calls function to parse line 
+    parse(line)	 																					# calls function to parse line 
